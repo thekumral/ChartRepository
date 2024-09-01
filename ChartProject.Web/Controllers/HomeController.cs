@@ -18,15 +18,20 @@ namespace ChartProject.Web.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
+
+        public IActionResult ChartSelectionPage(string dataSourceType)
         {
+            ViewBag.DataSourceType = dataSourceType;
             return View();
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        public IActionResult RenderChartPage(string dataSourceType, string chartType)
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            ViewBag.ChartType = chartType;
+            ViewBag.Labels = new[] { "Ocak", "Þubat", "Mart", "Nisan", "Mayýs" };
+            ViewBag.Data = new[] { 65, 59, 80, 81, 56 };
+
+            return View();
         }
     }
 }
