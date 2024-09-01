@@ -3,6 +3,11 @@ using ChartProject.Api.Models.Dtos;
 using ChartProject.Api.Models;
 using ChartProject.Api.Repositories;
 
+using AutoMapper;
+using ChartProject.Api.Models.Dtos;
+using ChartProject.Api.Models;
+using ChartProject.Api.Repositories;
+
 namespace ChartProject.Api.Services
 {
     public class ChartService : IChartService
@@ -49,12 +54,10 @@ namespace ChartProject.Api.Services
             return _mapper.Map<IEnumerable<ChartDataDTO>>(chartData);
         }
 
-
         public async Task AddChartDataAsync(ChartDataDTO request)
         {
             var chartData = _mapper.Map<ChartData>(request);
             await _chartRepository.AddChartDataAsync(chartData);
         }
-
     }
 }

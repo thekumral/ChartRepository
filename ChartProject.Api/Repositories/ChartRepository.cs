@@ -22,7 +22,6 @@ namespace ChartProject.Api.Repositories
                 using (var command = new SqlCommand(storedProcedureName, connection))
                 {
                     command.CommandType = CommandType.StoredProcedure;
-
                     if (parameters != null)
                     {
                         foreach (var param in parameters)
@@ -41,7 +40,7 @@ namespace ChartProject.Api.Repositories
                             {
                                 Id = reader.GetInt32(reader.GetOrdinal("Id")),
                                 Label = reader.GetString(reader.GetOrdinal("Label")),
-                                Value = reader.GetFloat(reader.GetOrdinal("Value")),  // float türüne uygun
+                                Value = reader.GetFloat(reader.GetOrdinal("Value")),
                                 Category = reader.GetString(reader.GetOrdinal("Category"))
                             });
                         }
@@ -62,7 +61,7 @@ namespace ChartProject.Api.Repositories
                 {
                     foreach (var param in parameters)
                     {
-                        sqlParameters.Add($"@{param.Key}", param.Value, DbType.Single); // Use DbType.Single for float type
+                        sqlParameters.Add($"@{param.Key}", param.Value, DbType.Single);
                     }
                 }
                 return await connection.QueryAsync<ChartData>(query, sqlParameters);
@@ -93,6 +92,5 @@ namespace ChartProject.Api.Repositories
                 await connection.ExecuteAsync(query, new { chartData.Label, chartData.Value, chartData.Category });
             }
         }
-
     }
 }

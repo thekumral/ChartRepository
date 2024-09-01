@@ -4,12 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ChartProject.Api.Controllers
 {
-
     [ApiController]
     [Route("api/[controller]")]
     public class ChartController : ControllerBase
     {
-        private static ConnectionInfoDto _connectionInfo;
         private readonly IChartService _chartService;
         private readonly ILogger<ChartController> _logger;
 
@@ -29,7 +27,6 @@ namespace ChartProject.Api.Controllers
 
             try
             {
-                // GlobalConnectionInfo'ya bağlantı bilgilerini atama
                 GlobalConnectionInfo.ConnectionInfo = connectionInfo;
                 _chartService.SetConnectionInfo(connectionInfo);
                 return Ok("Connection info set successfully.");
@@ -41,7 +38,6 @@ namespace ChartProject.Api.Controllers
             }
         }
 
-
         [HttpPost("get-data-from-view")]
         public async Task<IActionResult> GetDataFromView([FromBody] string viewName)
         {
@@ -52,18 +48,19 @@ namespace ChartProject.Api.Controllers
 
             try
             {
-                if (_connectionInfo == null)
+                var connectionInfo = GlobalConnectionInfo.ConnectionInfo;
+                if (connectionInfo == null)
                 {
                     return BadRequest("Connection info is not set.");
                 }
 
-                _connectionInfo.DataSource = viewName;
-                var chartData = await _chartService.GetChartDataAsync(_connectionInfo);
+                connectionInfo.DataSource = viewName;
+                var chartData = await _chartService.GetChartDataAsync(connectionInfo);
                 return Ok(chartData);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while fetching data from view.");
+                _logger.LogError(ex, "An error occurred while retrieving data from view.");
                 return StatusCode(500, $"Internal Server Error: {ex.Message}");
             }
         }
@@ -71,50 +68,39 @@ namespace ChartProject.Api.Controllers
         [HttpPost("get-data-from-stored-procedure")]
         public async Task<IActionResult> GetDataFromStoredProcedure([FromBody] StoredProcedureRequestDto request)
         {
-            if (request == null || string.IsNullOrWhiteSpace(request.StoredProcedureName))
+            if (string.IsNullOrWhiteSpace(request.StoredProcedureName))
             {
                 return BadRequest("Stored procedure name cannot be null or empty.");
             }
 
             try
             {
-                if (_connectionInfo == null)
+                var connectionInfo = GlobalConnectionInfo.ConnectionInfo;
+                if (connectionInfo == null)
                 {
                     return BadRequest("Connection info is not set.");
                 }
 
-                _connectionInfo.DataSource = request.StoredProcedureName;
+                connectionInfo.DataSource = request.StoredProcedureName;
 
-                var parameters = new Dictionary<string, object>();
-                if (request.Id.HasValue)
+                var parameters = new Dictionary<string, object>
                 {
-                    parameters.Add("@Id", request.Id.Value);
-                }
-                if (request.Value.HasValue)
-                {
-                    parameters.Add("@Value", request.Value.Value);
-                }
+                    { "Id", request.Id },
+                    { "Value", request.Value }
+                };
 
-                var chartData = await _chartService.GetChartDataAsync(_connectionInfo, parameters);
+                var chartData = await _chartService.GetChartDataAsync(connectionInfo, parameters);
                 return Ok(chartData);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while fetching data from stored procedure.");
+                _logger.LogError(ex, "An error occurred while retrieving data from stored procedure.");
                 return StatusCode(500, $"Internal Server Error: {ex.Message}");
             }
         }
 
-
-
-
-
-
-
-
-
         [HttpPost("get-data-from-function")]
-        public async Task<IActionResult> GetDataFromFunction([FromBody] string functionName, [FromQuery] float? minValue = null)
+        public async Task<IActionResult> GetDataFromFunction([FromBody] string functionName, [FromQuery] float minValue)
         {
             if (string.IsNullOrWhiteSpace(functionName))
             {
@@ -123,45 +109,46 @@ namespace ChartProject.Api.Controllers
 
             try
             {
-                if (_connectionInfo == null)
+                var connectionInfo = GlobalConnectionInfo.ConnectionInfo;
+                if (connectionInfo == null)
                 {
                     return BadRequest("Connection info is not set.");
                 }
 
-                _connectionInfo.DataSource = functionName;
+                connectionInfo.DataSource = functionName;
 
-                var parameters = new Dictionary<string, object>();
-                if (minValue.HasValue)
-                {
-                    parameters.Add("MinValue", minValue.Value);
-                }
+                var parameters = new Dictionary<string, object>
+        {
+            { "MinValue", minValue }
+        };
 
-                var chartData = await _chartService.GetChartDataAsync(_connectionInfo, parameters);
+                var chartData = await _chartService.GetChartDataAsync(connectionInfo, parameters);
                 return Ok(chartData);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while fetching data from function.");
+                _logger.LogError(ex, "An error occurred while retrieving data from function.");
                 return StatusCode(500, $"Internal Server Error: {ex.Message}");
             }
         }
 
-        [HttpPost("add-data")]
-        public async Task<IActionResult> AddDataAsync([FromBody] ChartDataDTO chartData)
+
+        [HttpPost("add-chart-data")]
+        public async Task<IActionResult> AddChartData([FromBody] ChartDataDTO chartData)
         {
             if (chartData == null)
             {
-                return BadRequest("Request cannot be null.");
+                return BadRequest("Chart data cannot be null.");
             }
 
             try
             {
                 await _chartService.AddChartDataAsync(chartData);
-                return Ok("Data added successfully.");
+                return Ok("Chart data added successfully.");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while adding data.");
+                _logger.LogError(ex, "An error occurred while adding chart data.");
                 return StatusCode(500, $"Internal Server Error: {ex.Message}");
             }
         }
