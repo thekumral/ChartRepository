@@ -1,0 +1,12 @@
+﻿@{
+    ViewBag.Title = "Chart Selection";
+}
+
+<section class="chart-selection-section">
+    <h2>Grafik Türünü Seçin</h2>
+    <div class="button-container">
+        <button onclick="location.href='@Url.Action("ShowChart", "Home", new { chartType = "line" })'">Line Chart</button>
+        <button onclick="location.href='@Url.Action("ShowChart", "Home", new { chartType = "bar" })'">Bar Chart</button>
+        <button onclick="location.href='@Url.Action("ShowChart", "Home", new { chartType = "radar" })'">Radar Chart</button>
+    </div>
+</section>

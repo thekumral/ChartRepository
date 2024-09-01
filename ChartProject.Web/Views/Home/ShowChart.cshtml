@@ -1,0 +1,58 @@
+﻿@{
+    ViewBag.Title = "Show Chart";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@latest/dist/Chart.min.css" />
+}
+
+<section class="chart-display-section">
+    <h2>@ViewBag.ChartType Grafik Türü</h2>
+    <canvas id="myChart"></canvas>
+</section>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@latest/dist/Chart.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            fetchChartData();
+        });
+
+        async function fetchChartData() {
+            const chartType = '@ViewBag.ChartType';
+            try {
+                const response = await fetch(`/api/chart/get-chart-data?chartType=${chartType}`);
+                const data = await response.json();
+                renderChart(chartType, data);
+            } catch (error) {
+                console.error('Error fetching chart data:', error);
+            }
+        }
+
+        function renderChart(chartType, data) {
+            const ctx = document.getElementById('myChart').getContext('2d');
+            const chartData = {
+                labels: data.map(d => d.label),
+                datasets: [{
+                    label: 'Dataset',
+                    data: data.map(d => d.value),
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            };
+
+            new Chart(ctx, {
+                type: chartType, // 'line', 'bar', 'radar', etc.
+                data: chartData,
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+}

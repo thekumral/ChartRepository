@@ -1,0 +1,36 @@
+﻿@model DataSourcesViewModel
+
+<section class="data-source-selection-section">
+    <div class="container">
+        <h2>Veri Kaynağı Seçimi</h2>
+        <div class="data-source-category">
+            <div class="data-source-column">
+                <h3>Views</h3>
+                <ul>
+                    @foreach (var view in Model.Views)
+                    {
+                        <li><a href="#">@view</a></li>
+                    }
+                </ul>
+            </div>
+            <div class="data-source-column">
+                <h3>Functions</h3>
+                <ul>
+                    @foreach (var func in Model.Functions)
+                    {
+                        <li><a href="#">@func</a></li>
+                    }
+                </ul>
+            </div>
+            <div class="data-source-column">
+                <h3>Stored Procedures</h3>
+                <ul>
+                    @foreach (var proc in Model.StoredProcedures)
+                    {
+                        <li><a href="#">@proc</a></li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,8 +1,55 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewBag.Title = "Veri Kümesi Seçimi";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<section class="data-source-selection-section">
+    <h2>Veri Kümesi Seçimi</h2>
+    <div id="dataSourceButtons" class="button-container">
+        <button onclick="fetchData('views')">View</button>
+        <button onclick="fetchData('storedprocedures')">Stored Procedure</button>
+        <button onclick="fetchData('functions')">Function</button>
+    </div>
+
+    <div id="results">
+        <h3>View Names</h3>
+        <ul id="viewList"></ul>
+        <h3>Stored Procedures</h3>
+        <ul id="storedProcList"></ul>
+        <h3>Function Names</h3>
+        <ul id="functionList"></ul>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        async function fetchData(type) {
+            try {
+                const response = await fetch(`/api/chart/${type}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    displayData(type, data);
+                } else {
+                    console.error('Failed to fetch data');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        function displayData(type, data) {
+            const listId = {
+                views: 'viewList',
+                storedprocedures: 'storedProcList',
+                functions: 'functionList'
+            }[type];
+
+            const list = document.getElementById(listId);
+            list.innerHTML = '';
+            data.forEach(item => {
+                const listItem = document.createElement('li');
+                listItem.textContent = item;
+                list.appendChild(listItem);
+            });
+        }
+    </script>
+}

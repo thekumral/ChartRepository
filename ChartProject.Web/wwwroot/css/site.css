@@ -1,3 +1,4 @@
+/* Genel stil ayarlarý */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -6,29 +7,36 @@ body {
     color: #333;
 }
 
+/* Ortalamak için genel kapsayýcý */
 .container {
     width: 90%;
     max-width: 1200px;
     margin: 0 auto;
 }
-
+/* Header */
 header {
     background-color: #007bff;
     padding: 20px 0;
     color: #fff;
 }
 
-    header h1 {
-        margin: 0;
-        text-align: center;
+    header .container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
 
+    header h1 {
+        margin: 0;
+        font-size: 1.5em;
+    }
+
+/* Navigasyon menüsü */
 nav ul {
     list-style-type: none;
     padding: 0;
     display: flex;
-    justify-content: center;
-    margin-top: 10px;
+    margin: 0;
 }
 
     nav ul li {
@@ -46,105 +54,13 @@ nav ul {
                 color: #ffcc00;
             }
 
+/* Ana içerik alaný */
 main {
     padding: 40px 0;
 }
 
-footer {
-    background-color: #333;
-    color: #fff;
-    padding: 20px 0;
-    text-align: center;
-}
 
-    footer p {
-        margin: 0;
-    }
-
-.home-section {
-    text-align: center;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-    .home-section h2 {
-        margin-bottom: 20px;
-        color: #007bff;
-    }
-
-    .home-section p {
-        font-size: 18px;
-        line-height: 1.6;
-    }
-
-.chart-selection-section {
-    background-color: #fff;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
-}
-
-    .chart-selection-section h2 {
-        margin-bottom: 20px;
-        color: #333;
-    }
-
-.data-source-selection-section {
-    text-align: center;
-    padding: 50px;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    margin-top: 50px;
-}
-
-.button-container {
-    display: flex;
-    justify-content: center;
-    gap: 30px;
-}
-
-    .button-container button {
-        padding: 15px 30px;
-        background-color: #007bff;
-        color: #fff;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 16px;
-        transition: background-color 0.3s ease;
-    }
-
-        .button-container button:hover {
-            background-color: #0056b3;
-        }
-
-.chart-type-selection-section {
-    text-align: center;
-    padding: 50px;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    margin-top: 50px;
-}
-
-.chart-render-section {
-    padding: 50px;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    margin-top: 50px;
-    text-align: center;
-}
-
-#chartCanvas {
-    max-width: 100%;
-    height: auto;
-}
-
+/* Giriþ sayfasý */
 .login-section {
     display: flex;
     justify-content: center;
@@ -204,3 +120,126 @@ button {
     button:hover {
         background-color: #0056b3;
     }
+
+/* Veri kaynaðý seçim sayfasý */
+.data-source-selection-section {
+    text-align: center;
+    padding: 50px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-top: 50px;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+}
+
+    .button-container button {
+        padding: 15px 30px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s ease;
+    }
+
+        .button-container button:hover {
+            background-color: #0056b3;
+        }
+
+/* Grafik türü seçim sayfasý */
+.chart-type-selection-section {
+    text-align: center;
+    padding: 50px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-top: 50px;
+}
+
+/* Grafik render sayfasý */
+.chart-render-section {
+    padding: 50px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-top: 50px;
+    text-align: center;
+}
+
+#chartCanvas {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Responsive ayarlarý */
+@media (max-width: 768px) {
+    .button-container {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .login-container {
+        padding: 20px;
+        max-width: 100%;
+    }
+}
+
+/* Veri Kaynaðý Seçimi */
+.data-source-selection-section {
+    padding: 40px 0;
+    background-color: #f4f4f4;
+}
+
+    .data-source-selection-section h2 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+.data-source-category {
+    display: flex;
+    justify-content: center; /* Ortalamak için */
+    gap: 20px; /* Kartlar arasýndaki boþluk */
+    flex-wrap: wrap; /* Ekran küçüldüðünde satýrdan alta geçmesini saðlar */
+}
+
+.data-source-column {
+    width: 30%;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    box-sizing: border-box; /* Padding ve border'ý toplam geniþliðe dahil eder */
+}
+
+    .data-source-column h3 {
+        border-bottom: 2px solid #007bff;
+        padding-bottom: 10px;
+        margin-bottom: 10px;
+        font-size: 1.2em;
+    }
+
+    .data-source-column ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+        .data-source-column ul li {
+            margin-bottom: 10px;
+        }
+
+            .data-source-column ul li a {
+                color: #007bff;
+                text-decoration: none;
+                font-weight: bold;
+            }
+
+                .data-source-column ul li a:hover {
+                    text-decoration: underline;
+                }

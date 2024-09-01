@@ -1,0 +1,37 @@
+﻿@{
+    ViewBag.Title = "Grafik Türü Seçimi";
+}
+
+<section class="chart-type-selection-section">
+    <h2>Grafik Türü Seçimi</h2>
+    <form id="chartTypeForm">
+        <div class="button-container">
+            <button type="submit" name="chartType" value="line">Line Chart</button>
+            <button type="submit" name="chartType" value="bar">Bar Chart</button>
+            <button type="submit" name="chartType" value="radar">Radar Chart</button>
+        </div>
+    </form>
+</section>
+
+<script>
+    document.getElementById('chartTypeForm').addEventListener('submit', async function (event) {
+        event.preventDefault();
+
+        const formData = new FormData(this);
+        const response = await fetch('/chart-selection', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams(formData).toString()
+        });
+
+        if (response.ok) {
+            window.location.href = '/display-chart';
+        } else {
+            alert('Grafik türü seçimi yapılamadı.');
+        }
+    });
+</script>
+
+<style>
+    /* CSS Styles */
+</style>
