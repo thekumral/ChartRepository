@@ -10,5 +10,9 @@ namespace ChartProject.Api.Repositories
         Task<IEnumerable<ChartData>> GetChartDataFromViewAsync(string viewName, string connectionString);
         Task AddChartDataAsync(ChartData chartData);
         void SetConnectionInfo(ConnectionInfoDto connectionInfo);
+        Task<IEnumerable<string>> GetViewNamesAsync(ConnectionInfoDto connectionInfo);
+        Task<IEnumerable<string>> GetFunctionNamesAsync(ConnectionInfoDto connectionInfo);
+        Task<IEnumerable<string>> GetStoredProcedureNamesAsync(ConnectionInfoDto connectionInfo);
+
     }
 }

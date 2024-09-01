@@ -8,5 +8,9 @@ namespace ChartProject.Api.Services
         ConnectionInfoDto GetConnectionInfo();
         Task<IEnumerable<ChartDataDTO>> GetChartDataAsync(ConnectionInfoDto connectionInfo, Dictionary<string, object> parameters = null);
         Task AddChartDataAsync(ChartDataDTO request);
+        Task<IEnumerable<string>> GetViewNamesAsync(ConnectionInfoDto connectionInfo);
+        Task<IEnumerable<string>> GetFunctionNamesAsync(ConnectionInfoDto connectionInfo);
+        Task<IEnumerable<string>> GetStoredProcedureNamesAsync(ConnectionInfoDto connectionInfo);
+
     }
 }
