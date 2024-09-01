@@ -1,0 +1,6 @@
+@ChartProject.Api_HostAddress = http://localhost:5082
+
+GET {{ChartProject.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
