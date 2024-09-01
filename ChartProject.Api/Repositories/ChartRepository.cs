@@ -92,65 +92,30 @@ namespace ChartProject.Api.Repositories
                 await connection.ExecuteAsync(query, new { chartData.Label, chartData.Value, chartData.Category });
             }
         }
-        public async Task<IEnumerable<string>> GetViewNamesAsync(ConnectionInfoDto connectionInfo)
+        public async Task<dynamic> GetDataSourcesAsync(ConnectionInfoDto connectionInfo)
         {
             if (connectionInfo == null)
             {
                 throw new InvalidOperationException("Connection info is not set.");
             }
 
-            var connectionString = $"Server={connectionInfo.ServerName};Database={connectionInfo.DatabaseName};Integrated Security=True;TrustServerCertificate=True;";
+            var connectionString = $"Server={connectionInfo.ServerName};Database={connectionInfo.DatabaseName};Integrated Security=True;TrustServerCertificate=True;MultipleActiveResultSets=True;";
 
             using (var connection = new SqlConnection(connectionString))
             {
-                var query = @"
-                    SELECT TABLE_NAME
-                    FROM INFORMATION_SCHEMA.VIEWS";
+                await connection.OpenAsync();
+                var viewsTask = connection.QueryAsync<string>("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.VIEWS");
+                var functionsTask = connection.QueryAsync<string>("SELECT ROUTINE_NAME FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'FUNCTION'");
+                var storedProceduresTask = connection.QueryAsync<string>("SELECT ROUTINE_NAME FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE'");
 
-                var viewNames = await connection.QueryAsync<string>(query);
-                return viewNames;
-            }
-        }
+                await Task.WhenAll(viewsTask, functionsTask, storedProceduresTask);
 
-        public async Task<IEnumerable<string>> GetFunctionNamesAsync(ConnectionInfoDto connectionInfo)
-        {
-            if (connectionInfo == null)
-            {
-                throw new InvalidOperationException("Connection info is not set.");
-            }
-
-            var connectionString = $"Server={connectionInfo.ServerName};Database={connectionInfo.DatabaseName};Integrated Security=True;TrustServerCertificate=True;";
-
-            using (var connection = new SqlConnection(connectionString))
-            {
-                var query = @"
-                    SELECT ROUTINE_NAME
-                    FROM INFORMATION_SCHEMA.ROUTINES
-                    WHERE ROUTINE_TYPE = 'FUNCTION'";
-
-                var functionNames = await connection.QueryAsync<string>(query);
-                return functionNames;
-            }
-        }
-
-        public async Task<IEnumerable<string>> GetStoredProcedureNamesAsync(ConnectionInfoDto connectionInfo)
-        {
-            if (connectionInfo == null)
-            {
-                throw new InvalidOperationException("Connection info is not set.");
-            }
-
-            var connectionString = $"Server={connectionInfo.ServerName};Database={connectionInfo.DatabaseName};Integrated Security=True;TrustServerCertificate=True;";
-
-            using (var connection = new SqlConnection(connectionString))
-            {
-                var query = @"
-                    SELECT ROUTINE_NAME
-                    FROM INFORMATION_SCHEMA.ROUTINES
-                    WHERE ROUTINE_TYPE = 'PROCEDURE'";
-
-                var storedProcedureNames = await connection.QueryAsync<string>(query);
-                return storedProcedureNames;
+                return new
+                {
+                    Views = await viewsTask,
+                    Functions = await functionsTask,
+                    StoredProcedures = await storedProceduresTask
+                };
             }
         }
     }

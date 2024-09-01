@@ -24,7 +24,6 @@ namespace ChartProject.Api.Controllers
             {
                 return BadRequest("Connection info cannot be null.");
             }
-
             try
             {
                 GlobalConnectionInfo.ConnectionInfo = connectionInfo;
@@ -37,6 +36,7 @@ namespace ChartProject.Api.Controllers
                 return StatusCode(500, $"Internal Server Error: {ex.Message}");
             }
         }
+
 
         [HttpPost("get-data-from-view")]
         public async Task<IActionResult> GetDataFromView([FromBody] string viewName)
@@ -153,67 +153,25 @@ namespace ChartProject.Api.Controllers
             }
         }
 
-        [HttpGet("views")]
-        public async Task<IActionResult> GetViewNames()
+        [HttpGet("all-data-sources")]
+        public async Task<IActionResult> GetAllDataSources()
         {
             var connectionInfo = GlobalConnectionInfo.ConnectionInfo;
             if (connectionInfo == null)
             {
                 return BadRequest("Connection info is not set.");
             }
-
             try
             {
-                var viewNames = await _chartService.GetViewNamesAsync(connectionInfo);
-                return Ok(viewNames);
+                var dataSources = await _chartService.GetAllDataSourcesAsync( connectionInfo);
+                return Ok(dataSources);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while retrieving view names.");
+                _logger.LogError(ex, "An error occurred while retrieving data sources.");
                 return StatusCode(500, $"Internal Server Error: {ex.Message}");
             }
         }
 
-        [HttpGet("functions")]
-        public async Task<IActionResult> GetFunctionNames()
-        {
-            var connectionInfo = GlobalConnectionInfo.ConnectionInfo;
-            if (connectionInfo == null)
-            {
-                return BadRequest("Connection info is not set.");
-            }
-
-            try
-            {
-                var functionNames = await _chartService.GetFunctionNamesAsync(connectionInfo);
-                return Ok(functionNames);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while retrieving function names.");
-                return StatusCode(500, $"Internal Server Error: {ex.Message}");
-            }
-        }
-
-        [HttpGet("storedprocedures")]
-        public async Task<IActionResult> GetStoredProcedureNames()
-        {
-            var connectionInfo = GlobalConnectionInfo.ConnectionInfo;
-            if (connectionInfo == null)
-            {
-                return BadRequest("Connection info is not set.");
-            }
-
-            try
-            {
-                var storedProcedureNames = await _chartService.GetStoredProcedureNamesAsync(connectionInfo);
-                return Ok(storedProcedureNames);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while retrieving stored procedure names.");
-                return StatusCode(500, $"Internal Server Error: {ex.Message}");
-            }
-        }
     }
 }

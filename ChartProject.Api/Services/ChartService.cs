@@ -59,19 +59,9 @@ namespace ChartProject.Api.Services
             var chartData = _mapper.Map<ChartData>(request);
             await _chartRepository.AddChartDataAsync(chartData);
         }
-        public Task<IEnumerable<string>> GetViewNamesAsync(ConnectionInfoDto connectionInfo)
+        public Task<dynamic> GetAllDataSourcesAsync(ConnectionInfoDto connectionInfo)
         {
-            return _chartRepository.GetViewNamesAsync(connectionInfo);
-        }
-
-        public Task<IEnumerable<string>> GetFunctionNamesAsync(ConnectionInfoDto connectionInfo)
-        {
-            return _chartRepository.GetFunctionNamesAsync(connectionInfo);
-        }
-
-        public Task<IEnumerable<string>> GetStoredProcedureNamesAsync(ConnectionInfoDto connectionInfo)
-        {
-            return _chartRepository.GetStoredProcedureNamesAsync(connectionInfo);
+            return _chartRepository.GetDataSourcesAsync(connectionInfo);
         }
     }
 }
