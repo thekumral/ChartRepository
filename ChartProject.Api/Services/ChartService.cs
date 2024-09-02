@@ -42,7 +42,7 @@ namespace ChartProject.Api.Services
             {
                 chartData = await _chartRepository.GetChartDataFromStoredProcedureAsync(connectionInfo.DataSource, connectionString, dataSourceParameters);
             }
-            else if (connectionInfo.DataSource.Contains("GetChartDataAboveValue"))
+            else if (connectionInfo.DataSource.StartsWith("fc_"))
             {
                 chartData = await _chartRepository.GetChartDataFromFunctionAsync(connectionInfo.DataSource, connectionString, dataSourceParameters);
             }

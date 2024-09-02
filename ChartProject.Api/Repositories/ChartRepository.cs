@@ -56,18 +56,27 @@ namespace ChartProject.Api.Repositories
             using (var connection = new SqlConnection(connectionString))
             {
                 await connection.OpenAsync();
+
+                // Fonksiyon çağrısı için SQL sorgusu
                 var query = $"SELECT * FROM dbo.{functionName}(@MinValue)";
+
+                // SQL parametrelerini ayarlama
                 var sqlParameters = new DynamicParameters();
                 if (parameters != null)
                 {
                     foreach (var param in parameters)
                     {
-                        sqlParameters.Add($"@{param.Key}", param.Value, DbType.Single);
+                        // Parametrelerin türünü doğru ayarlama
+                        sqlParameters.Add($"@{param.Key}", param.Value ?? DBNull.Value);
                     }
                 }
-                return await connection.QueryAsync<ChartData>(query, sqlParameters);
+
+                // Verileri çekme
+                var chartData = await connection.QueryAsync<ChartData>(query, sqlParameters);
+                return chartData;
             }
         }
+
 
         public async Task<IEnumerable<ChartData>> GetChartDataFromViewAsync(string viewName, string connectionString)
         {
