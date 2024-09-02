@@ -32,6 +32,10 @@
             .function-input input {
                 margin-right: 10px;
             }
+
+        .category-input {
+            margin-bottom: 20px;
+        }
     </style>
 }
 
@@ -39,6 +43,10 @@
     <div class="container">
         <h2>Veri Kaynağı Seçimi</h2>
         <form method="post" action="@Url.Action("ChartSelectionPage", "Home")">
+            <div class="form-group category-input">
+                <label for="categoryInput">Kategori Adı:</label>
+                <input type="text" id="categoryInput" name="category" placeholder="Kategori adını girin" required />
+            </div>
             <div class="data-source-category">
                 <!-- Görünümler -->
                 <div class="data-source-column">

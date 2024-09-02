@@ -44,22 +44,20 @@ namespace ChartProject.Web.Controllers
         }
 
         [HttpPost("chart-selection-page")]
-        public async Task<IActionResult> ChartSelectionPage([FromForm] string dataSource, [FromForm] string functionParameter, [FromForm] string dataType)
+        public async Task<IActionResult> ChartSelectionPage([FromForm] string dataSource, [FromForm] string category, [FromForm] string dataType)
         {
-            if (string.IsNullOrWhiteSpace(dataSource))
+            if (string.IsNullOrWhiteSpace(dataSource) || string.IsNullOrWhiteSpace(category))
             {
-                return BadRequest("Seçilen veri kaynaðý boþ olamaz.");
+                return BadRequest("Seçilen veri kaynaðý veya kategori boþ olamaz.");
             }
 
             TempData["SelectedDataSource"] = dataSource;
-            TempData["FunctionParameter"] = functionParameter;
+            TempData["Category"] = category;
             TempData["DataType"] = dataType;
 
             var apiEndpoint = dataType switch
             {
-                "Function" => "get-data-from-function",
                 "StoredProcedure" => "get-data-from-stored-procedure",
-                "View" => "get-data-from-view",
                 _ => null
             };
 
@@ -75,25 +73,14 @@ namespace ChartProject.Web.Controllers
 
                 switch (dataType)
                 {
-                    case "Function":
-                        requestUri = $"https://localhost:7213/api/Chart/{apiEndpoint}?minValue={Uri.EscapeDataString(functionParameter)}";
-                        var functionRequestBody = dataSource; // FunctionName doðrudan JSON gövdesi
-                        response = await _httpClient.PostAsync(requestUri, new StringContent($"\"{functionRequestBody}\"", Encoding.UTF8, "application/json"));
-                        break;
-
                     case "StoredProcedure":
                         requestUri = $"https://localhost:7213/api/Chart/{apiEndpoint}";
                         var storedProcedureRequestBody = new
                         {
-                            ProcedureName = dataSource
+                            StoredProcedureName = dataSource,
+                            Category = category
                         };
                         response = await _httpClient.PostAsJsonAsync(requestUri, storedProcedureRequestBody);
-                        break;
-
-                    case "View":
-                        requestUri = $"https://localhost:7213/api/Chart/{apiEndpoint}";
-                        var viewRequestBody = dataSource;
-                        response = await _httpClient.PostAsJsonAsync(requestUri, viewRequestBody);
                         break;
 
                     default:
@@ -118,6 +105,7 @@ namespace ChartProject.Web.Controllers
                 return StatusCode(500, $"Ýç hata: {ex.Message}");
             }
         }
+
 
 
 
