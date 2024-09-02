@@ -20,28 +20,60 @@
             var chartData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(chartData));
 
             if (chartData && chartData.length > 0) {
-                var labels = chartData.map(data => data.Label);
-                var values = chartData.map(data => data.Value);
-                var categories = [...new Set(chartData.map(data => data.Category))];
+                var groupedData = chartData.reduce((acc, data) => {
+                    if (!acc[data.Label]) {
+                        acc[data.Label] = {
+                            Label: data.Label,
+                            Value: 0,
+                            Category: data.Category
+                        };
+                    }
+                    acc[data.Label].Value += data.Value;
+                    return acc;
+                }, {});
 
-                var datasets = categories.map(category => ({
-                    label: category,
-                    data: chartData.filter(data => data.Category === category).map(data => data.Value),
-                    backgroundColor: getRandomColor(),
-                    borderColor: getRandomColor(),
-                    borderWidth: 1
-                }));
+                var sortedData = Object.values(groupedData).sort((a, b) => b.Value - a.Value);
+
+                var labels = sortedData.map(data => data.Label);
+                var values = sortedData.map(data => data.Value);
 
                 var data = {
                     labels: labels,
-                    datasets: datasets
+                    datasets: [{
+                        label: 'Data',
+                        data: values,
+                        backgroundColor: sortedData.map(() => getRandomColor()),
+                        borderColor: sortedData.map(() => getRandomColor()),
+                        borderWidth: 1
+                    }]
                 };
 
                 var options = {
                     responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (tooltipItem) {
+                                    return tooltipItem.label + ': ' + tooltipItem.raw;
+                                }
+                            }
+                        }
+                    },
                     scales: {
-                        x: { beginAtZero: true },
-                        y: { beginAtZero: true }
+                        x: {
+                            beginAtZero: true,
+                            ticks: {
+                                autoSkip: false,
+                                maxRotation: 90,
+                                minRotation: 45
+                            }
+                        },
+                        y: {
+                            beginAtZero: true
+                        }
                     }
                 };
 
@@ -61,5 +93,6 @@
                 return color;
             }
         });
+
     </script>
 }

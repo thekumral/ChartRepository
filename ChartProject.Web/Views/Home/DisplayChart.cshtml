@@ -8,6 +8,7 @@
     <h2>@chartType Chart</h2>
     <canvas id="chart-container"></canvas>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             var chartData = @Html.Raw(Json.Serialize(chartData));
@@ -20,31 +21,39 @@
             }
 
             var ctx = document.getElementById('chart-container').getContext('2d');
-            var chart = new Chart(ctx, {
-                type: chartType,
-                data: {
-                    labels: chartData.map(data => data.label),
-                    datasets: [{
-                        label: 'Data',
-                        data: chartData.map(data => data.value),
-                        backgroundColor: chartData.map(() => generateRandomColor()),
-                        borderColor: chartData.map(() => generateRandomColor()),
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        x: {
-                            stacked: true
-                        },
-                        y: {
-                            stacked: true,
-                            beginAtZero: true
+
+            if (chartData && chartData.length > 0) {
+                var labels = chartData.map(data => data.Label);
+                var values = chartData.map(data => data.Value);
+
+                var chart = new Chart(ctx, {
+                    type: chartType,
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Data',
+                            data: values,
+                            backgroundColor: generateRandomColor(),
+                            borderColor: generateRandomColor(),
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            x: {
+                                stacked: true
+                            },
+                            y: {
+                                stacked: true,
+                                beginAtZero: true
+                            }
                         }
                     }
-                }
-            });
+                });
+            } else {
+                console.error('No chart data available');
+            }
         });
     </script>
 </section>
