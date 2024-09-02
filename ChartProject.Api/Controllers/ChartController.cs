@@ -84,10 +84,9 @@ namespace ChartProject.Api.Controllers
                 connectionInfo.DataSource = request.StoredProcedureName;
 
                 var parameters = new Dictionary<string, object>
-                {
-                    { "Id", request.Id },
-                    { "Value", request.Value }
-                };
+            {
+                { "Category", request.Category } // Saklı prosedürde kullanacağımız parametre
+            };
 
                 var chartData = await _chartService.GetChartDataAsync(connectionInfo, parameters);
                 return Ok(chartData);

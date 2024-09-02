@@ -23,6 +23,15 @@
             .data-source-column li {
                 margin-bottom: 10px;
             }
+
+        .function-input {
+            display: flex;
+            align-items: center;
+        }
+
+            .function-input input {
+                margin-right: 10px;
+            }
     </style>
 }
 
@@ -33,12 +42,12 @@
             <div class="data-source-category">
                 <!-- Görünümler -->
                 <div class="data-source-column">
-                    <h3>Görünümler</h3>
+                    <h3>Views</h3>
                     <ul>
                         @foreach (var view in Model.Views)
                         {
                             <li>
-                                <button type="submit" name="dataSource" value="@view">@view</button>
+                                <button type="submit" name="dataSource" value="@view" data-type="View"> @view</button>
                             </li>
                         }
                     </ul>
@@ -46,16 +55,15 @@
 
                 <!-- Fonksiyonlar -->
                 <div class="data-source-column">
-                    <h3>Fonksiyonlar</h3>
+                    <h3>Functions</h3>
                     <ul>
                         @foreach (var func in Model.Functions)
                         {
                             <li>
-                                <label>
-                                    @func
+                                <div class="function-input">
                                     <input type="text" name="functionParameter" placeholder="Parametre girin" />
-                                    <button type="submit" name="dataSource" value="@func">Seç</button>
-                                </label>
+                                    <button type="submit" name="dataSource" value="@func" data-type="Function" id="function-button"> @func</button>
+                                </div>
                             </li>
                         }
                     </ul>
@@ -63,17 +71,35 @@
 
                 <!-- Saklı Prosedürler -->
                 <div class="data-source-column">
-                    <h3>Saklı Prosedürler</h3>
+                    <h3>Procedures</h3>
                     <ul>
                         @foreach (var proc in Model.StoredProcedures)
                         {
                             <li>
-                                <button type="submit" name="dataSource" value="@proc">@proc</button>
+                                <button type="submit" name="dataSource" value="@proc" data-type="StoredProcedure">@proc</button>
                             </li>
                         }
                     </ul>
                 </div>
             </div>
+            <!-- Gizli alan -->
+            <input type="hidden" name="dataType" id="dataTypeField" />
         </form>
     </div>
 </section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Butonlara tıklama olay dinleyici ekleme
+        document.querySelectorAll('button[data-type]').forEach(function (button) {
+            button.addEventListener('click', function () {
+                // Formu bulma
+                var form = button.closest('form');
+                // Gizli alanı bulma
+                var dataTypeField = form.querySelector('input[name="dataType"]');
+                // Gizli alana tıklanan butondan data-type değerini atama
+                dataTypeField.value = button.getAttribute('data-type');
+            });
+        });
+    });
+</script>

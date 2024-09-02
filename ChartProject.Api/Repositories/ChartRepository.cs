@@ -40,7 +40,7 @@ namespace ChartProject.Api.Repositories
                             {
                                 Id = reader.GetInt32(reader.GetOrdinal("Id")),
                                 Label = reader.GetString(reader.GetOrdinal("Label")),
-                                Value = reader.GetFloat(reader.GetOrdinal("Value")),
+                                Value = reader.GetDecimal(reader.GetOrdinal("Value")), // `decimal` olarak okuma
                                 Category = reader.GetString(reader.GetOrdinal("Category"))
                             });
                         }
@@ -49,6 +49,7 @@ namespace ChartProject.Api.Repositories
                 }
             }
         }
+
 
         public async Task<IEnumerable<ChartData>> GetChartDataFromFunctionAsync(string functionName, string connectionString, Dictionary<string, object> parameters = null)
         {

@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using ChartProject.Web.Models;
+using System.Text;
 
 namespace ChartProject.Web.Controllers
 {
@@ -43,7 +44,7 @@ namespace ChartProject.Web.Controllers
         }
 
         [HttpPost("chart-selection-page")]
-        public async Task<IActionResult> ChartSelectionPage([FromForm] string dataSource, [FromForm] string functionParameter)
+        public async Task<IActionResult> ChartSelectionPage([FromForm] string dataSource, [FromForm] string functionParameter, [FromForm] string dataType)
         {
             if (string.IsNullOrWhiteSpace(dataSource))
             {
@@ -52,42 +53,51 @@ namespace ChartProject.Web.Controllers
 
             TempData["SelectedDataSource"] = dataSource;
             TempData["FunctionParameter"] = functionParameter;
+            TempData["DataType"] = dataType;
 
-            var apiEndpoint = dataSource.Contains("Function")
-                ? "get-data-from-function"
-                : dataSource.Contains("StoredProcedure")
-                ? "get-data-from-stored-procedure"
-                : "get-data-from-view";
+            var apiEndpoint = dataType switch
+            {
+                "Function" => "get-data-from-function",
+                "StoredProcedure" => "get-data-from-stored-procedure",
+                "View" => "get-data-from-view",
+                _ => null
+            };
+
+            if (apiEndpoint == null)
+            {
+                return BadRequest("Bilinmeyen veri kaynaðý türü.");
+            }
 
             try
             {
                 HttpResponseMessage response;
+                string requestUri;
 
-                if (dataSource.Contains("Function"))
+                switch (dataType)
                 {
-                    // Eðer bir Function seçilmiþse, hem FunctionName hem de MinValue gönderiyoruz.
-                    var requestBody = new
-                    {
-                        FunctionName = dataSource,
-                        MinValue = functionParameter
-                    };
+                    case "Function":
+                        requestUri = $"https://localhost:7213/api/Chart/{apiEndpoint}?minValue={Uri.EscapeDataString(functionParameter)}";
+                        var functionRequestBody = dataSource; // FunctionName doðrudan JSON gövdesi
+                        response = await _httpClient.PostAsync(requestUri, new StringContent($"\"{functionRequestBody}\"", Encoding.UTF8, "application/json"));
+                        break;
 
-                    response = await _httpClient.PostAsJsonAsync($"https://localhost:7213/api/Chart/{apiEndpoint}", requestBody);
-                }
-                else if (dataSource.Contains("StoredProcedure"))
-                {
-                    // Eðer bir Stored Procedure seçilmiþse, dataSource'ý isim olarak gönderiyoruz.
-                    var requestBody = new
-                    {
-                        ProcedureName = dataSource
-                    };
+                    case "StoredProcedure":
+                        requestUri = $"https://localhost:7213/api/Chart/{apiEndpoint}";
+                        var storedProcedureRequestBody = new
+                        {
+                            ProcedureName = dataSource
+                        };
+                        response = await _httpClient.PostAsJsonAsync(requestUri, storedProcedureRequestBody);
+                        break;
 
-                    response = await _httpClient.PostAsJsonAsync($"https://localhost:7213/api/Chart/{apiEndpoint}", requestBody);
-                }
-                else
-                {
-                    // Eðer bir View seçilmiþse, sadece dataSource ismini string olarak gönderiyoruz.
-                    response = await _httpClient.PostAsJsonAsync($"https://localhost:7213/api/Chart/{apiEndpoint}", dataSource);
+                    case "View":
+                        requestUri = $"https://localhost:7213/api/Chart/{apiEndpoint}";
+                        var viewRequestBody = dataSource;
+                        response = await _httpClient.PostAsJsonAsync(requestUri, viewRequestBody);
+                        break;
+
+                    default:
+                        return BadRequest("Bilinmeyen veri kaynaðý türü.");
                 }
 
                 if (response.IsSuccessStatusCode)
@@ -108,6 +118,10 @@ namespace ChartProject.Web.Controllers
                 return StatusCode(500, $"Ýç hata: {ex.Message}");
             }
         }
+
+
+
+
 
 
         [HttpPost("chart-selection-confirm")]
