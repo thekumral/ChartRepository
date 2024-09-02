@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+ï»¿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -32,47 +32,52 @@ namespace ChartProject.Web.Controllers
                 }
                 else
                 {
-                    _logger.LogError($"Veri kaynaklarý alýnamadý. Durum kodu: {response.StatusCode}");
+                    _logger.LogError($"Veri kaynaklarÄ± alÄ±namadÄ±. Durum kodu: {response.StatusCode}");
                     return View(new DataSourcesViewModel());
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Veri kaynaklarý alýnýrken bir hata oluþtu.");
-                return StatusCode(500, $"Ýç hata: {ex.Message}");
+                _logger.LogError(ex, "Veri kaynaklarÄ± alÄ±nÄ±rken bir hata oluÅŸtu.");
+                return StatusCode(500, $"Ä°Ã§ hata: {ex.Message}");
             }
         }
 
         [HttpPost("chart-selection-page")]
-        public async Task<IActionResult> ChartSelectionPage([FromForm] string dataSource, [FromForm] string category, [FromForm] string dataType)
+        public async Task<IActionResult> ChartSelectionPage([FromForm] string dataSource, [FromForm] string functionParameter, [FromForm] string dataType, [FromForm] string category)
         {
-            if (string.IsNullOrWhiteSpace(dataSource) || string.IsNullOrWhiteSpace(category))
+            if (string.IsNullOrWhiteSpace(dataSource))
             {
-                return BadRequest("Seçilen veri kaynaðý veya kategori boþ olamaz.");
+                return BadRequest("SeÃ§ilen veri kaynaÄŸÄ± boÅŸ olamaz.");
             }
-
             TempData["SelectedDataSource"] = dataSource;
-            TempData["Category"] = category;
+            TempData["FunctionParameter"] = functionParameter;
             TempData["DataType"] = dataType;
-
+            TempData["Category"] = category;
             var apiEndpoint = dataType switch
             {
+                "Function" => "get-data-from-function",
                 "StoredProcedure" => "get-data-from-stored-procedure",
+                "View" => "get-data-from-view",
                 _ => null
             };
 
             if (apiEndpoint == null)
             {
-                return BadRequest("Bilinmeyen veri kaynaðý türü.");
+                return BadRequest("Bilinmeyen veri kaynaÄŸÄ± tÃ¼rÃ¼.");
             }
-
             try
             {
                 HttpResponseMessage response;
                 string requestUri;
-
                 switch (dataType)
                 {
+                    case "Function":
+                        requestUri = $"https://localhost:7213/api/Chart/{apiEndpoint}?minValue={Uri.EscapeDataString(functionParameter)}";
+                        var functionRequestBody = dataSource;
+                        response = await _httpClient.PostAsync(requestUri, new StringContent($"\"{functionRequestBody}\"", Encoding.UTF8, "application/json"));
+                        break;
+
                     case "StoredProcedure":
                         requestUri = $"https://localhost:7213/api/Chart/{apiEndpoint}";
                         var storedProcedureRequestBody = new
@@ -83,8 +88,14 @@ namespace ChartProject.Web.Controllers
                         response = await _httpClient.PostAsJsonAsync(requestUri, storedProcedureRequestBody);
                         break;
 
+                    case "View":
+                        requestUri = $"https://localhost:7213/api/Chart/{apiEndpoint}";
+                        var viewRequestBody = dataSource;
+                        response = await _httpClient.PostAsJsonAsync(requestUri, viewRequestBody);
+                        break;
+
                     default:
-                        return BadRequest("Bilinmeyen veri kaynaðý türü.");
+                        return BadRequest("Bilinmeyen veri kaynaÄŸÄ± tÃ¼rÃ¼.");
                 }
 
                 if (response.IsSuccessStatusCode)
@@ -95,18 +106,16 @@ namespace ChartProject.Web.Controllers
                 }
                 else
                 {
-                    _logger.LogError($"Veri alýnamadý. Durum kodu: {response.StatusCode}");
-                    return StatusCode(500, "Veri alýnýrken bir hata oluþtu.");
+                    _logger.LogError($"Veri alÄ±namadÄ±. Durum kodu: {response.StatusCode}");
+                    return StatusCode(500, "Veri alÄ±nÄ±rken bir hata oluÅŸtu.");
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Grafik verileri alýnýrken bir hata oluþtu.");
-                return StatusCode(500, $"Ýç hata: {ex.Message}");
+                _logger.LogError(ex, "Grafik verileri alÄ±nÄ±rken bir hata oluÅŸtu.");
+                return StatusCode(500, $"Ä°Ã§ hata: {ex.Message}");
             }
         }
-
-
 
 
 
@@ -117,13 +126,13 @@ namespace ChartProject.Web.Controllers
         {
             if (string.IsNullOrWhiteSpace(chartType))
             {
-                return BadRequest("Grafik türü seçilmelidir.");
+                return BadRequest("Grafik tÃ¼rÃ¼ seÃ§ilmelidir.");
             }
 
             var chartData = ViewBag.ChartData as List<ChartDataDto>;
             if (chartData == null || !chartData.Any())
             {
-                return BadRequest("Grafik verileri mevcut deðil.");
+                return BadRequest("Grafik verileri mevcut deÄŸil.");
             }
 
             ViewBag.ChartType = chartType;

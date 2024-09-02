@@ -85,7 +85,7 @@ namespace ChartProject.Api.Controllers
 
                 var parameters = new Dictionary<string, object>
             {
-                { "Category", request.Category } // Saklı prosedürde kullanacağımız parametre
+                { "Category", request.Category }
             };
 
                 var chartData = await _chartService.GetChartDataAsync(connectionInfo, parameters);

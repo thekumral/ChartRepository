@@ -9,10 +9,13 @@
         .data-source-category {
             display: flex;
             justify-content: space-around;
+            flex-wrap: wrap;
         }
 
         .data-source-column {
             width: 30%;
+            box-sizing: border-box;
+            padding: 10px;
         }
 
             .data-source-column ul {
@@ -21,17 +24,37 @@
             }
 
             .data-source-column li {
-                margin-bottom: 10px;
+                margin-bottom: 20px;
             }
 
-        .function-input {
+        .function-input,
+        .procedure-input {
             display: flex;
-            align-items: center;
+            flex-direction: column;
         }
 
-            .function-input input {
-                margin-right: 10px;
+            .function-input input,
+            .procedure-input input {
+                margin-bottom: 10px;
+                padding: 5px;
+                width: 100%;
+                box-sizing: border-box;
             }
+
+            .function-input button,
+            .procedure-input button {
+                padding: 10px;
+                background-color: #007bff;
+                color: white;
+                border: none;
+                cursor: pointer;
+                width: 100%;
+            }
+
+                .function-input button:hover,
+                .procedure-input button:hover {
+                    background-color: #0056b3;
+                }
 
         .category-input {
             margin-bottom: 20px;
@@ -43,10 +66,6 @@
     <div class="container">
         <h2>Veri Kaynağı Seçimi</h2>
         <form method="post" action="@Url.Action("ChartSelectionPage", "Home")">
-            <div class="form-group category-input">
-                <label for="categoryInput">Kategori Adı:</label>
-                <input type="text" id="categoryInput" name="category" placeholder="Kategori adını girin" required />
-            </div>
             <div class="data-source-category">
                 <!-- Görünümler -->
                 <div class="data-source-column">
@@ -78,27 +97,32 @@
                 </div>
 
                 <!-- Saklı Prosedürler -->
+                <!-- Saklı Prosedürler -->
                 <div class="data-source-column">
                     <h3>Procedures</h3>
                     <ul>
                         @foreach (var proc in Model.StoredProcedures)
                         {
                             <li>
-                                <button type="submit" name="dataSource" value="@proc" data-type="StoredProcedure">@proc</button>
+                                <form method="post" action="@Url.Action("ChartSelectionPage", "Home")">
+                                    <div class="procedure-input">
+                                        <input type="text" name="category" placeholder="Kategori giriniz" />
+                                        <button type="submit" name="dataSource" value="@proc"> @proc</button>
+                                    </div>
+                                    <input type="hidden" name="dataType" value="StoredProcedure" />
+                                </form>
                             </li>
                         }
                     </ul>
                 </div>
+
             </div>
-            <!-- Gizli alan -->
-            <input type="hidden" name="dataType" id="dataTypeField" />
         </form>
     </div>
 </section>
-
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Butonlara tıklama olay dinleyici ekleme
+        // Tüm butonları seç
         document.querySelectorAll('button[data-type]').forEach(function (button) {
             button.addEventListener('click', function () {
                 // Formu bulma
