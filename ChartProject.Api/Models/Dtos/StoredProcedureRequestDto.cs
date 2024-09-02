@@ -3,7 +3,7 @@
     public class StoredProcedureRequestDto
     {
         public string StoredProcedureName { get; set; }
-        public string Category { get; set; }  // Yeni bir alan ekledik
+        public string Category { get; set; }
     }
 
 }

@@ -3,7 +3,7 @@
     public class ChartDataDTO
     {
         public string Label { get; set; }
-        public float Value { get; set; }  // float, veritabanındaki 'float' türüne uygun
+        public decimal Value { get; set; }
         public string Category { get; set; }
 
     }

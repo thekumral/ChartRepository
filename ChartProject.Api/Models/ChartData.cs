@@ -4,7 +4,7 @@
     {
         public int Id { get; set; }
         public string Label { get; set; }
-        public decimal Value { get; set; }  // float, veritabanındaki 'float' türüne uygun
+        public decimal Value { get; set; }
         public string Category { get; set; }
     }
 }

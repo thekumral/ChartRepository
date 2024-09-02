@@ -40,7 +40,7 @@ namespace ChartProject.Api.Repositories
                             {
                                 Id = reader.GetInt32(reader.GetOrdinal("Id")),
                                 Label = reader.GetString(reader.GetOrdinal("Label")),
-                                Value = reader.GetDecimal(reader.GetOrdinal("Value")), // `decimal` olarak okuma
+                                Value = reader.GetDecimal(reader.GetOrdinal("Value")),
                                 Category = reader.GetString(reader.GetOrdinal("Category"))
                             });
                         }
@@ -56,22 +56,15 @@ namespace ChartProject.Api.Repositories
             using (var connection = new SqlConnection(connectionString))
             {
                 await connection.OpenAsync();
-
-                // Fonksiyon çağrısı için SQL sorgusu
                 var query = $"SELECT * FROM dbo.{functionName}(@MinValue)";
-
-                // SQL parametrelerini ayarlama
                 var sqlParameters = new DynamicParameters();
                 if (parameters != null)
                 {
                     foreach (var param in parameters)
                     {
-                        // Parametrelerin türünü doğru ayarlama
                         sqlParameters.Add($"@{param.Key}", param.Value ?? DBNull.Value);
                     }
                 }
-
-                // Verileri çekme
                 var chartData = await connection.QueryAsync<ChartData>(query, sqlParameters);
                 return chartData;
             }
@@ -117,9 +110,7 @@ namespace ChartProject.Api.Repositories
                 var viewsTask = connection.QueryAsync<string>("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.VIEWS");
                 var functionsTask = connection.QueryAsync<string>("SELECT ROUTINE_NAME FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'FUNCTION'");
                 var storedProceduresTask = connection.QueryAsync<string>("SELECT ROUTINE_NAME FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE'");
-
                 await Task.WhenAll(viewsTask, functionsTask, storedProceduresTask);
-
                 return new
                 {
                     Views = await viewsTask,

@@ -6,9 +6,4 @@
             public string DatabaseName { get; set; }
             public string DataSource { get; set; }
         }
-        public static class GlobalConnectionInfo
-        {
-            public static ConnectionInfoDto ConnectionInfo { get; set; }
-        }
-
 }

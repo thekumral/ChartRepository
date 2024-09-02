@@ -61,7 +61,6 @@
         }
     </style>
 }
-
 <section class="data-source-selection-section">
     <div class="container">
         <h2>Veri Kaynağı Seçimi</h2>
@@ -79,8 +78,6 @@
                         }
                     </ul>
                 </div>
-
-                <!-- Fonksiyonlar -->
                 <div class="data-source-column">
                     <h3>Functions</h3>
                     <ul>
@@ -95,9 +92,6 @@
                         }
                     </ul>
                 </div>
-
-                <!-- Saklı Prosedürler -->
-                <!-- Saklı Prosedürler -->
                 <div class="data-source-column">
                     <h3>Procedures</h3>
                     <ul>
@@ -122,14 +116,10 @@
 </section>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Tüm butonları seç
         document.querySelectorAll('button[data-type]').forEach(function (button) {
             button.addEventListener('click', function () {
-                // Formu bulma
                 var form = button.closest('form');
-                // Gizli alanı bulma
                 var dataTypeField = form.querySelector('input[name="dataType"]');
-                // Gizli alana tıklanan butondan data-type değerini atama
                 dataTypeField.value = button.getAttribute('data-type');
             });
         });

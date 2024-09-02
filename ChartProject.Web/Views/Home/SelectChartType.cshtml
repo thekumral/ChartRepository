@@ -29,7 +29,6 @@
         @if (chartData != null && chartData.Any())
         {
             <div class="chart-preview">
-                <!-- Grafik verileri burada görselleştirilecek -->
                 <canvas id="chartPreviewCanvas" width="600" height="400"></canvas>
             </div>
         }
@@ -47,16 +46,14 @@
         document.addEventListener('DOMContentLoaded', function () {
             var chartData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(chartData));
             var ctx = document.getElementById('chartPreviewCanvas').getContext('2d');
-            var chartType = 'bar'; // Varsayılan olarak 'bar' grafik türü
+            var chartType = 'bar';
 
             var chart = createChart(ctx, chartType, chartData);
-
-            // Grafik türü değiştirildiğinde grafiği güncelle
             document.querySelectorAll('input[name="chartType"]').forEach(function (radio) {
                 radio.addEventListener('change', function () {
                     chartType = this.value;
-                    chart.destroy(); // Mevcut grafiği yok et
-                    chart = createChart(ctx, chartType, chartData); // Yeni grafik oluştur
+                    chart.destroy();
+                    chart = createChart(ctx, chartType, chartData);
                 });
             });
 

@@ -44,13 +44,11 @@ namespace ChartProject.Web.Controllers
             }
             catch (HttpRequestException ex)
             {
-                // Log the exception (optional)
                 ViewBag.Error = $"Bir hata oluştu: {ex.Message}";
                 return View("LoginPage");
             }
             catch (Exception ex)
             {
-                // Log the exception (optional)
                 ViewBag.Error = $"Bir hata oluştu: {ex.Message}";
                 return View("LoginPage");
             }
