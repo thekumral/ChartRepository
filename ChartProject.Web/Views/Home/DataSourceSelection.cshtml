@@ -1,36 +1,79 @@
 ﻿@model DataSourcesViewModel
 
+@section Styles {
+    <style>
+        .data-source-selection-section {
+            padding: 20px;
+        }
+
+        .data-source-category {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .data-source-column {
+            width: 30%;
+        }
+
+            .data-source-column ul {
+                list-style-type: none;
+                padding: 0;
+            }
+
+            .data-source-column li {
+                margin-bottom: 10px;
+            }
+    </style>
+}
+
 <section class="data-source-selection-section">
     <div class="container">
         <h2>Veri Kaynağı Seçimi</h2>
-        <div class="data-source-category">
-            <div class="data-source-column">
-                <h3>Views</h3>
-                <ul>
-                    @foreach (var view in Model.Views)
-                    {
-                        <li><a href="#">@view</a></li>
-                    }
-                </ul>
+        <form method="post" action="@Url.Action("ChartSelectionPage", "Home")">
+            <div class="data-source-category">
+                <!-- Görünümler -->
+                <div class="data-source-column">
+                    <h3>Görünümler</h3>
+                    <ul>
+                        @foreach (var view in Model.Views)
+                        {
+                            <li>
+                                <button type="submit" name="dataSource" value="@view">@view</button>
+                            </li>
+                        }
+                    </ul>
+                </div>
+
+                <!-- Fonksiyonlar -->
+                <div class="data-source-column">
+                    <h3>Fonksiyonlar</h3>
+                    <ul>
+                        @foreach (var func in Model.Functions)
+                        {
+                            <li>
+                                <label>
+                                    @func
+                                    <input type="text" name="functionParameter" placeholder="Parametre girin" />
+                                    <button type="submit" name="dataSource" value="@func">Seç</button>
+                                </label>
+                            </li>
+                        }
+                    </ul>
+                </div>
+
+                <!-- Saklı Prosedürler -->
+                <div class="data-source-column">
+                    <h3>Saklı Prosedürler</h3>
+                    <ul>
+                        @foreach (var proc in Model.StoredProcedures)
+                        {
+                            <li>
+                                <button type="submit" name="dataSource" value="@proc">@proc</button>
+                            </li>
+                        }
+                    </ul>
+                </div>
             </div>
-            <div class="data-source-column">
-                <h3>Functions</h3>
-                <ul>
-                    @foreach (var func in Model.Functions)
-                    {
-                        <li><a href="#">@func</a></li>
-                    }
-                </ul>
-            </div>
-            <div class="data-source-column">
-                <h3>Stored Procedures</h3>
-                <ul>
-                    @foreach (var proc in Model.StoredProcedures)
-                    {
-                        <li><a href="#">@proc</a></li>
-                    }
-                </ul>
-            </div>
-        </div>
+        </form>
     </div>
 </section>

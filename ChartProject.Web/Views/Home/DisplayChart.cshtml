@@ -1,48 +1,42 @@
-﻿@using Newtonsoft.Json
-@{
-    ViewBag.Title = "Grafik Gösterimi";
-    var chartType = ViewBag.ChartType;
-    var chartData = ViewBag.ChartData as IEnumerable<ChartData>;
+﻿@{
+    ViewBag.Title = "Display Chart";
+    var chartType = ViewBag.ChartType as string;
+    var chartData = ViewBag.ChartData as List<ChartDataDto>;
 }
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>@ViewBag.Title</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
-    <h2>@ViewBag.Title</h2>
-    <canvas id="chart"></canvas>
+<section class="chart-display-section">
+    <h2>@chartType Chart</h2>
+    <!-- Grafik çizim alanı -->
+    <div id="chart-container"></div>
+
     <script>
-        var ctx = document.getElementById('chart').getContext('2d');
-        var chartType = '@chartType';
-        var chartData = @Html.Raw(JsonConvert.SerializeObject(chartData));
+        document.addEventListener('DOMContentLoaded', function () {
+            var chartData = @Html.Raw(Json.Serialize(chartData));
+            var chartType = '@chartType';
 
-        var data = {
-            labels: chartData.map(item => item.Label),
-            datasets: [{
-                label: 'Sales Data',
-                data: chartData.map(item => item.Value),
-                backgroundColor: chartType === 'bar' ? 'rgba(75, 192, 192, 0.2)' : undefined,
-                borderColor: chartType === 'bar' ? 'rgba(75, 192, 192, 1)' : undefined,
-                borderWidth: chartType === 'bar' ? 1 : undefined,
-                fill: chartType !== 'line'
-            }]
-        };
-
-        new Chart(ctx, {
-            type: chartType,
-            data: data,
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        display: true
+            // Grafik çizim kodu (örneğin Chart.js kullanabilirsiniz)
+            var ctx = document.getElementById('chart-container').getContext('2d');
+            var chart = new Chart(ctx, {
+                type: chartType,
+                data: {
+                    labels: chartData.map(data => data.label),
+                    datasets: [{
+                        label: 'Data',
+                        data: chartData.map(data => data.value),
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
                     }
                 }
-            }
+            });
         });
     </script>
-</body>
-</html>
+</section>

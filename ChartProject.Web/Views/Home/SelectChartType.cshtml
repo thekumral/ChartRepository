@@ -1,37 +1,122 @@
 ﻿@{
-    ViewBag.Title = "Grafik Türü Seçimi";
+    ViewBag.Title = "Grafik Türünü Seçin";
+    var chartData = ViewBag.ChartData as List<ChartProject.Web.Models.ChartDataDto>;
 }
 
-<section class="chart-type-selection-section">
-    <h2>Grafik Türü Seçimi</h2>
-    <form id="chartTypeForm">
-        <div class="button-container">
-            <button type="submit" name="chartType" value="line">Line Chart</button>
-            <button type="submit" name="chartType" value="bar">Bar Chart</button>
-            <button type="submit" name="chartType" value="radar">Radar Chart</button>
+<section class="chart-type-selection">
+    <div class="container">
+        <div class="form-group text-center">
+            <div class="chart-type-options">
+                <div class="form-check form-check-inline">
+                    <input type="radio" id="lineChart" name="chartType" value="line" class="form-check-input" />
+                    <label for="lineChart" class="form-check-label">Line Chart</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input type="radio" id="barChart" name="chartType" value="bar" class="form-check-input" checked />
+                    <label for="barChart" class="form-check-label">Bar Chart</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input type="radio" id="radarChart" name="chartType" value="radar" class="form-check-input" />
+                    <label for="radarChart" class="form-check-label">Radar Chart</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input type="radio" id="pieChart" name="chartType" value="pie" class="form-check-input" />
+                    <label for="pieChart" class="form-check-label">Pie Chart</label>
+                </div>
+            </div>
         </div>
-    </form>
+
+        @if (chartData != null && chartData.Any())
+        {
+            <div class="chart-preview">
+                <!-- Grafik verileri burada görselleştirilecek -->
+                <canvas id="chartPreviewCanvas" width="600" height="400"></canvas>
+            </div>
+        }
+
+        <div id="chartDataJson" class="mt-4">
+            <h4>Grafik Verileri (JSON Formatı):</h4>
+            <pre>@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(chartData, Newtonsoft.Json.Formatting.Indented))</pre>
+        </div>
+    </div>
 </section>
 
-<script>
-    document.getElementById('chartTypeForm').addEventListener('submit', async function (event) {
-        event.preventDefault();
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var chartData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(chartData));
+            var ctx = document.getElementById('chartPreviewCanvas').getContext('2d');
+            var chartType = 'bar'; // Varsayılan olarak 'bar' grafik türü
 
-        const formData = new FormData(this);
-        const response = await fetch('/chart-selection', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams(formData).toString()
+            var chart = createChart(ctx, chartType, chartData);
+
+            // Grafik türü değiştirildiğinde grafiği güncelle
+            document.querySelectorAll('input[name="chartType"]').forEach(function (radio) {
+                radio.addEventListener('change', function () {
+                    chartType = this.value;
+                    chart.destroy(); // Mevcut grafiği yok et
+                    chart = createChart(ctx, chartType, chartData); // Yeni grafik oluştur
+                });
+            });
+
+            function createChart(ctx, type, data) {
+                var labels = data.map(d => d.Label);
+                var categories = [...new Set(data.map(d => d.Category))];
+
+                var datasets = categories.map(category => ({
+                    label: category,
+                    data: data.filter(d => d.Category === category).map(d => d.Value),
+                    backgroundColor: getRandomColor(),
+                    borderColor: getRandomColor(),
+                    borderWidth: 1
+                }));
+
+                return new Chart(ctx, {
+                    type: type,
+                    data: {
+                        labels: labels,
+                        datasets: datasets
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            x: { beginAtZero: true },
+                            y: { beginAtZero: true }
+                        }
+                    }
+                });
+            }
+
+            function getRandomColor() {
+                var letters = '0123456789ABCDEF';
+                var color = '#';
+                for (var i = 0; i < 6; i++) {
+                    color += letters[Math.floor(Math.random() * 16)];
+                }
+                return color;
+            }
         });
-
-        if (response.ok) {
-            window.location.href = '/display-chart';
-        } else {
-            alert('Grafik türü seçimi yapılamadı.');
+    </script>
+    <style>
+        .chart-type-options {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
         }
-    });
-</script>
 
-<style>
-    /* CSS Styles */
-</style>
+        .form-check {
+            display: flex;
+            align-items: center;
+        }
+
+        .form-check-label {
+            margin-left: 5px;
+        }
+
+        .chart-preview {
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+}

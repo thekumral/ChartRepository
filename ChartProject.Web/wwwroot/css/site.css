@@ -151,31 +151,44 @@ button {
         .button-container button:hover {
             background-color: #0056b3;
         }
-
-/* Grafik türü seçim sayfasý */
-.chart-type-selection-section {
-    text-align: center;
-    padding: 50px;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    margin-top: 50px;
-}
-
-/* Grafik render sayfasý */
-.chart-render-section {
-    padding: 50px;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    margin-top: 50px;
+.chart-selection-section {
+    padding: 20px;
     text-align: center;
 }
 
-#chartCanvas {
-    max-width: 100%;
-    height: auto;
+.button-container {
+    margin: 20px 0;
 }
+
+    .button-container button {
+        margin: 0 10px;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        border: none;
+        background-color: #007bff;
+        color: white;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+    }
+
+        .button-container button:hover {
+            background-color: #0056b3;
+        }
+
+.chart-container {
+    margin: 20px auto;
+    padding: 20px;
+    max-width: 80%;
+    text-align: center;
+}
+
+canvas {
+    display: block;
+    margin: 0 auto;
+}
+
+
 
 /* Responsive ayarlarý */
 @media (max-width: 768px) {

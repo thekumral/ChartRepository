@@ -1,0 +1,65 @@
+﻿@{
+    var chartData = ViewBag.ChartData as List<ChartDataDto>;
+    var chartType = ViewBag.ChartType as string;
+}
+
+@if (chartData != null && chartData.Any())
+{
+    <div class="chart-container">
+        <h3>@chartType Grafik Türü</h3>
+        <canvas id="chartCanvas" width="600" height="400"></canvas>
+    </div>
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var ctx = document.getElementById('chartCanvas').getContext('2d');
+            var chartType = '@chartType';
+            var chartData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(chartData));
+
+            if (chartData && chartData.length > 0) {
+                var labels = chartData.map(data => data.Label);
+                var values = chartData.map(data => data.Value);
+                var categories = [...new Set(chartData.map(data => data.Category))];
+
+                var datasets = categories.map(category => ({
+                    label: category,
+                    data: chartData.filter(data => data.Category === category).map(data => data.Value),
+                    backgroundColor: getRandomColor(),
+                    borderColor: getRandomColor(),
+                    borderWidth: 1
+                }));
+
+                var data = {
+                    labels: labels,
+                    datasets: datasets
+                };
+
+                var options = {
+                    responsive: true,
+                    scales: {
+                        x: { beginAtZero: true },
+                        y: { beginAtZero: true }
+                    }
+                };
+
+                new Chart(ctx, {
+                    type: chartType,
+                    data: data,
+                    options: options
+                });
+            }
+
+            function getRandomColor() {
+                var letters = '0123456789ABCDEF';
+                var color = '#';
+                for (var i = 0; i < 6; i++) {
+                    color += letters[Math.floor(Math.random() * 16)];
+                }
+                return color;
+            }
+        });
+    </script>
+}

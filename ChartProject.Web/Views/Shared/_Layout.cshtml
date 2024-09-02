@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - Dinamik Chart Uygulaması</title>
     <link rel="stylesheet" href="~/css/site.css">
+    @RenderSection("Styles", required: false) <!-- Stil section'ını render et -->
 </head>
 <body>
     <header>
@@ -26,5 +27,7 @@
             @RenderBody()
         </div>
     </main>
+
+    @RenderSection("Scripts", required: false) <!-- Script section'ını render et -->
 </body>
 </html>
